@@ -8,7 +8,7 @@ See: https://docs.pycom.io/chapter/datasheets/downloads/wipy2-pinout.pdf
 
 Modifications include:
 * Changing buf_bytes to 0b representation for clearer view of what's happening internally
-* Switch to machine.SPI instead of pyb.SPIfor Pycom WiPy 2.0 board
+* Switch to machine.SPI instead of pyb.SPI for Pycom WiPy 2.0 board
 * Adding disable_irq and enable_irq to prevent interrupts firing mid-transaction and causing a premature reset
 """
 
