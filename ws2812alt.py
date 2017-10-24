@@ -46,7 +46,7 @@ class WS2812:
         self.intensity = intensity
 
         # prepare SPI data buffer (4 bytes for each color)
-        self.buf_length = self.led_count * 3 * 4
+        self.buf_length = self.led_count * 4 * 4
         self.buf = bytearray(self.buf_length)
 
         # SPI init
@@ -90,7 +90,17 @@ class WS2812:
 
         mask = 0x03
         index = start * 12
-        for red, green, blue in data:
+
+        count = 0
+
+        for pixel in data:
+            if len(pixel) == 3:
+                red, green, blue = pixel
+            elif len(pixel) == 4:
+                red, green, blue, white = pixel
+            else:
+                raise Exception("unknow tuple size '{}'".format(len(pixel)))
+
             red = int(red * intensity)
             green = int(green * intensity)
             blue = int(blue * intensity)
@@ -111,8 +121,19 @@ class WS2812:
             buf[index+11] = buf_bytes[blue & mask]
 
             index += 12
+            if len(pixel) == 4:
+                buf[index] = buf_bytes[white >> 6 & mask]
+                buf[index+1] = buf_bytes[white >> 4 & mask]
+                buf[index+2] = buf_bytes[white >> 2 & mask]
+                buf[index+3] = buf_bytes[white & mask]
 
-        return index // 12
+                index += 4
+
+                count += 16
+            else:
+                count += 12
+
+        return count
 
     def fill_buf(self, data):
         """
